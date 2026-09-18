@@ -56,7 +56,7 @@ esac
 release_version="${version#v}"
 archive="k8s-ai-bench_${release_version}_${os}_${arch}.tar.gz"
 download_url="https://github.com/${repository}/releases/download/${version}/${archive}"
-archive_path="$(mktemp -t k8s-ai-bench-release)"
+archive_path="$(mktemp "${TMPDIR:-/tmp}/k8s-ai-bench-release.XXXXXX")"
 dce_archive="dce-${dce_version}-${os}-${arch}.tar.gz"
 dce_download_url="https://github.com/${dce_repository}/releases/download/${dce_version}/${dce_archive}"
 trap 'rm -f "${archive_path}"' EXIT
@@ -71,8 +71,8 @@ if command -v dce >/dev/null 2>&1; then
 else
   echo "dce CLI not found; downloading a local copy"
   echo "Downloading ${dce_download_url}"
-  dce_archive_path="$(mktemp -t dce-cli-release)"
-  dce_extract_dir="$(mktemp -d -t dce-cli-release)"
+  dce_archive_path="$(mktemp "${TMPDIR:-/tmp}/dce-cli-release.XXXXXX")"
+  dce_extract_dir="$(mktemp -d "${TMPDIR:-/tmp}/dce-cli-release.XXXXXX")"
   trap 'rm -f "${archive_path}" "${dce_archive_path}"; rm -rf "${dce_extract_dir}"' EXIT
   curl --fail --location --silent --show-error "${dce_download_url}" -o "${dce_archive_path}"
   tar -xzf "${dce_archive_path}" -C "${dce_extract_dir}"
